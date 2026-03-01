@@ -82,16 +82,16 @@ function saveMessage(sessionId: string, role: 'user' | 'assistant', text: string
   saveSessions(sessions)
 }
 
-/** Import the existing sub-task execution from the old orchestrator */
+/** Execute sub-task using LangChain with tool support */
 async function executeSubTaskViaCli(agent: Agent, task: string, parentSessionId: string): Promise<string> {
-  // Dynamic import to avoid circular deps
-  const { callProvider } = await import('./orchestrator')
-  const crypto = await import('crypto')
   const { loadSessions: ls, saveSessions: ss } = await import('./storage')
+  const { streamAgentChat } = await import('./stream-agent-chat')
 
   const sessions = ls()
   const parentSession = sessions[parentSessionId]
   const childId = crypto.randomBytes(4).toString('hex')
+
+  // Create child session
   sessions[childId] = {
     id: childId,
     name: `[Agent] ${agent.name}: ${task.slice(0, 40)}`,
@@ -109,7 +109,9 @@ async function executeSubTaskViaCli(agent: Agent, task: string, parentSessionId:
       codex: null,
       opencode: null,
     },
-    messages: [],
+    messages: [
+      { role: 'user', text: task, time: Date.now() }
+    ],
     createdAt: Date.now(),
     lastActiveAt: Date.now(),
     sessionType: 'orchestrated' as const,
@@ -119,11 +121,37 @@ async function executeSubTaskViaCli(agent: Agent, task: string, parentSessionId:
   }
   ss(sessions)
 
-  const result = await callProvider(agent, agent.systemPrompt, [{ role: 'user', text: task }])
+  // Use streamAgentChat which has LangChain tool support
+  let result = ''
+  const write = (data: string) => {
+    // Parse SSE events to extract text
+    if (data.startsWith('data: ')) {
+      try {
+        const event = JSON.parse(data.slice(6))
+        if (event.t === 'd') {
+          result += event.text || ''
+        } else if (event.t === 'r' || event.t === 'md') {
+          result = event.text || ''
+        }
+      } catch { /* ignore parse errors */ }
+    }
+  }
 
+  // Get API key for the agent
+  const apiKey = resolveCredential(agent.credentialId)
+
+  await streamAgentChat({
+    session: sessions[childId],
+    message: task,
+    apiKey,
+    systemPrompt: agent.systemPrompt,
+    write,
+    history: [], // Fresh conversation for sub-task
+  })
+
+  // Save final result to session
   const s2 = ls()
   if (s2[childId]) {
-    s2[childId].messages.push({ role: 'user', text: task, time: Date.now() })
     s2[childId].messages.push({ role: 'assistant', text: result, time: Date.now() })
     s2[childId].lastActiveAt = Date.now()
     ss(s2)
