@@ -64,3 +64,13 @@ next-env.d.ts
 
 # local scratch dir accidentally created by tooling
 /~/
+
+# Swarm orchestrator cached IDs
+.tech-orchestrator-id
+.business-orchestrator-id
+.implementation-agent-id
+
+# Generated plans (comment out if you want to track them in git)
+# technical-plan.md
+# business-strategy.md
+# implementation-log.md
