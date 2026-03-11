@@ -320,8 +320,43 @@ export interface MemoryEntry {
   updatedAt: number
 }
 
-export type SessionType = 'human' | 'orchestrated'
-export type AppView = 'sessions' | 'agents' | 'schedules' | 'memory' | 'tasks' | 'secrets' | 'providers' | 'skills' | 'connectors' | 'webhooks' | 'mcp_servers' | 'knowledge' | 'plugins' | 'usage' | 'runs' | 'logs'
+export type SessionType = 'human' | 'orchestrated' | 'roundtable'
+
+// --- Roundtable Discussions ---
+
+export type RoundtableStatus = 'active' | 'paused' | 'completed'
+
+export interface RoundtableParticipant {
+  agentId: string
+  agentName: string
+  sessionId?: string | null
+  lastResponseAt?: number | null
+}
+
+export interface RoundtableMessage {
+  id: string
+  participantId: string  // agentId or 'user'
+  participantName: string
+  text: string
+  turnNumber: number
+  createdAt: number
+}
+
+export interface Roundtable {
+  id: string
+  name: string
+  topic: string
+  participants: RoundtableParticipant[]
+  messages: RoundtableMessage[]
+  status: RoundtableStatus
+  currentTurn: number
+  maxTurns?: number | null
+  moderatorAgentId?: string | null  // optional moderator agent
+  sessionId: string  // main orchestrator session
+  createdAt: number
+  updatedAt: number
+}
+export type AppView = 'sessions' | 'agents' | 'schedules' | 'memory' | 'tasks' | 'secrets' | 'providers' | 'skills' | 'connectors' | 'webhooks' | 'mcp_servers' | 'knowledge' | 'plugins' | 'usage' | 'runs' | 'logs' | 'roundtables'
 
 // --- Session Runs ---
 

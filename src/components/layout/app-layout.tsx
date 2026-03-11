@@ -39,6 +39,7 @@ import { PluginList } from '@/components/plugins/plugin-list'
 import { PluginSheet } from '@/components/plugins/plugin-sheet'
 import { UsageList } from '@/components/usage/usage-list'
 import { RunList } from '@/components/runs/run-list'
+import { RoundtablesPanel } from '@/components/roundtables/roundtables-panel'
 import { NetworkBanner } from './network-banner'
 import { UpdateBanner } from './update-banner'
 import { MobileHeader } from './mobile-header'
@@ -253,6 +254,11 @@ export function AppLayout() {
             <NavItem view="tasks" label="Tasks" expanded={railExpanded} active={activeView} sidebarOpen={sidebarOpen} onClick={() => { setActiveView('tasks'); setSidebarOpen(true) }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                 <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" /><rect x="9" y="3" width="6" height="4" rx="1" /><path d="M9 14l2 2 4-4" />
+              </svg>
+            </NavItem>
+            <NavItem view="roundtables" label="Roundtables" expanded={railExpanded} active={activeView} sidebarOpen={sidebarOpen} onClick={() => { setActiveView('roundtables'); setSidebarOpen(false) }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <circle cx="12" cy="12" r="10" /><path d="M12 8v4l3 3" /><circle cx="12" cy="12" r="2" /><circle cx="6" cy="12" r="1" /><circle cx="18" cy="12" r="1" /><circle cx="12" cy="6" r="1" /><circle cx="12" cy="18" r="1" />
               </svg>
             </NavItem>
             <NavItem view="secrets" label="Secrets" expanded={railExpanded} active={activeView} sidebarOpen={sidebarOpen} onClick={() => { setActiveView('secrets'); setSidebarOpen(true) }}>
@@ -619,6 +625,8 @@ export function AppLayout() {
             <TaskBoard />
           ) : activeView === 'memory' ? (
             <MemoryDetail />
+          ) : activeView === 'roundtables' ? (
+            <RoundtablesPanel />
           ) : (
             <ViewEmptyState view={activeView} />
           )}
@@ -734,6 +742,7 @@ const VIEW_DESCRIPTIONS: Record<AppView, string> = {
   plugins: 'Extend agent capabilities with custom plugins',
   usage: 'Token usage analytics & cost tracking',
   runs: 'Live session run monitoring & history',
+  roundtables: 'Multi-agent discussion forums',
 }
 
 const VIEW_EMPTY_STATES: Record<Exclude<AppView, 'sessions' | 'agents'>, { icon: string; title: string; description: string; features: string[] }> = {
@@ -820,6 +829,12 @@ const VIEW_EMPTY_STATES: Record<Exclude<AppView, 'sessions' | 'agents'>, { icon:
     title: 'Runs',
     description: 'View the session run queue and execution history.',
     features: ['Monitor queued and running tasks', 'View run results and errors', 'Cancel pending runs', 'Automatic retry tracking'],
+  },
+  roundtables: {
+    icon: 'users',
+    title: 'Roundtables',
+    description: 'Multi-agent discussion forums where multiple AI agents discuss topics together with optional human participation.',
+    features: ['Select multiple agents to participate', 'Watch agents build on each other\'s ideas', 'Join the conversation as a human participant', 'Control discussion flow with pause/resume'],
   },
 }
 

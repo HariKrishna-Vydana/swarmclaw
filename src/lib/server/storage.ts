@@ -43,6 +43,7 @@ const COLLECTIONS = [
   'model_overrides',
   'mcp_servers',
   'webhook_logs',
+  'roundtables',
 ] as const
 
 for (const table of COLLECTIONS) {
@@ -667,4 +668,21 @@ export function getSessionMessages(sessionId: string): any[] {
   if (!row) return []
   const session = JSON.parse(row.data)
   return session?.messages || []
+}
+
+// --- Roundtables ---
+export function loadRoundtables(): Record<string, any> {
+  return loadCollection('roundtables')
+}
+
+export function saveRoundtables(r: Record<string, any>) {
+  saveCollection('roundtables', r)
+}
+
+export function upsertRoundtable(id: string, roundtable: any) {
+  upsertCollectionItem('roundtables', id, roundtable)
+}
+
+export function deleteRoundtable(id: string) {
+  deleteCollectionItem('roundtables', id)
 }
