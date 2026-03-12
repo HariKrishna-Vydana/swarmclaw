@@ -27,7 +27,9 @@ const nextConfig: NextConfig = {
     'localhost',
     '127.0.0.1',
     '0.0.0.0',
+    '10.138.152.43',
   ],
+  webSocketServer: false,
 };
 
 export default nextConfig;

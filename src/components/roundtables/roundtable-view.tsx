@@ -292,6 +292,13 @@ export function RoundtableView({ roundtable, onUpdate }: RoundtableViewProps) {
         <div ref={messagesEndRef} />
       </div>
 
+      {/* Consensus banner */}
+      {consensusReached && (
+        <div className="p-3 border-t bg-green-500/10 text-center text-green-600 dark:text-green-400">
+          Consensus reached! Agents appear to agree.
+        </div>
+      )}
+
       {/* Input */}
       {roundtable.status === 'active' && (
         <div className="p-4 border-t">
@@ -301,18 +308,37 @@ export function RoundtableView({ roundtable, onUpdate }: RoundtableViewProps) {
               onChange={(e) => setUserMessage(e.target.value)}
               placeholder="Join the discussion or press 'Next Turn' to let agents continue..."
               onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
-              disabled={isRunning}
+              disabled={isRunning || autoRunning}
             />
-            <Button onClick={handleSend} disabled={isRunning || !userMessage.trim()}>
+            <Button onClick={handleSend} disabled={isRunning || autoRunning || !userMessage.trim()}>
               <Send className="w-4 h-4" />
             </Button>
             <Button
               variant="outline"
               onClick={() => runTurn()}
-              disabled={isRunning}
+              disabled={isRunning || autoRunning}
             >
               {isRunning ? 'Running...' : 'Next Turn'}
             </Button>
+            {!autoRunning ? (
+              <Button
+                variant="default"
+                onClick={startAutoRun}
+                disabled={isRunning}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                <PlayCircle className="w-4 h-4 mr-1" />
+                Auto Run
+              </Button>
+            ) : (
+              <Button
+                variant="destructive"
+                onClick={stopAutoRun}
+              >
+                <StopCircle className="w-4 h-4 mr-1" />
+                Stop
+              </Button>
+            )}
           </div>
         </div>
       )}
@@ -320,6 +346,7 @@ export function RoundtableView({ roundtable, onUpdate }: RoundtableViewProps) {
       {roundtable.status === 'completed' && (
         <div className="p-4 border-t bg-muted/50 text-center text-muted-foreground">
           Discussion completed after {roundtable.currentTurn} turns
+          {consensusReached && ' (consensus reached)'}
         </div>
       )}
 
