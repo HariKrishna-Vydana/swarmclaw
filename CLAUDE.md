@@ -8,23 +8,26 @@ SwarmClaw is a self-hosted AI agent orchestration dashboard. It manages multiple
 
 ## Repository Structure
 
-Monorepo with two projects:
-- `swarmclaw-app/` — Main application (Next.js 16 + React 19 + TypeScript)
-- `swarmclaw-site/` — Static documentation site (Next.js)
+Single Next.js application at the root:
+- `src/` — Application source (Next.js 16 + React 19 + TypeScript)
+- `data/` — SQLite databases and plugins
+- `scripts/` — Utility scripts
+- `docs/` — Documentation
 
-All development commands run from `swarmclaw-app/`.
+## Additional Documentation
+
+- **[SWARMCLAW_AGENT_TERMINAL_CONTROL.md](./SWARMCLAW_AGENT_TERMINAL_CONTROL.md)** — Tutorial for giving AI agents full terminal control via Claude Code CLI. Covers agent creation, task delegation, shell/file/git execution, and the 3-API-call workflow.
 
 ## Commands
 
 ```bash
-cd swarmclaw-app
 npm install          # install dependencies
 npm run dev          # dev server on 0.0.0.0:3456
 npm run build        # production build
 npm run lint         # ESLint
 ```
 
-Docker: `docker compose up -d` (from `swarmclaw-app/`)
+Docker: `docker compose up -d`
 
 No test framework is configured.
 
